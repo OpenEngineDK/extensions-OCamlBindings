@@ -1,0 +1,83 @@
+# This should be included before the _INIT variables are
+# used to initialize the cache.  Since the rule variables 
+# have if blocks on them, users can still define them here.
+# But, it should still be after the platform file so changes can
+# be made to those values.
+
+# General
+IF(CMAKE_USER_MAKE_RULES_OVERRIDE)
+   INCLUDE(${CMAKE_USER_MAKE_RULES_OVERRIDE})
+ENDIF(CMAKE_USER_MAKE_RULES_OVERRIDE)
+
+# OCaml specific
+IF(CMAKE_USER_MAKE_RULES_OVERRIDE_OCaml)
+   INCLUDE(${CMAKE_USER_MAKE_RULES_OVERRIDE_OCaml})
+ENDIF(CMAKE_USER_MAKE_RULES_OVERRIDE_OCaml)
+
+# CMake special variables:
+# CMAKE_lang_OUTPUT_EXTENSION
+# CMAKE_lang_COMPILER
+# CMAKE_lang_COMPILER_ID
+# CMAKE_SHARED_MODULE_lang_FLAGS
+# CMAKE_SHARED_MODULE_CREATE_lang_FLAGS
+# CMAKE_SHARED_LIBRARY_lang_FLAGS
+# CMAKE_SHARED_LIBRARY_CREATE_lang_FLAGS
+# CMAKE_lang_FLAGS
+# CMAKE_lang_FLAGS_<config>
+# CMAKE_lang_STANDARD_LIBRARIES
+# CMAKE_SHARED_LIBRARY_LINK_lang_FLAGS
+
+SET(CMAKE_INCLUDE_FLAG_OCaml "-I ")
+#SET(CMAKE_INCLUDE_FLAG_SEP_OCaml " -I ")
+#CMAKE_INCLUDE_FLAG_SEP_lang is not really a separator, yay for CMake...
+
+# now define the following rule variables
+# CMAKE_OCaml_CREATE_STATIC_LIBRARY
+# CMAKE_OCaml_CREATE_SHARED_LIBRARY
+# CMAKE_OCaml_CREATE_SHARED_MODULE
+# CMAKE_OCaml_COMPILE_OBJECT
+# CMAKE_OCaml_LINK_EXECUTABLE
+
+# variables supplied by the generator at use time
+# <TARGET>
+# <TARGET_BASE> the target without the suffix
+# <OBJECTS>
+# <OBJECT>
+# <LINK_LIBRARIES>
+# <FLAGS>
+# <LINK_FLAGS>
+
+# OCaml compiler information
+# <CMAKE_OCaml_COMPILER>  
+# <CMAKE_SHARED_LIBRARY_CREATE_OCaml_FLAGS>
+# <CMAKE_SHARED_MODULE_CREATE_OCaml_FLAGS>
+# <CMAKE_OCaml_LINK_FLAGS>
+
+#SET(CMAKE_OCaml_COMPILER "python ${OpenEngine_SOURCE_DIR}/conf/ocaml/ocaml.py")
+# compile an OCaml library
+IF(NOT CMAKE_OCaml_CREATE_STATIC_LIBRARY)
+  SET(CMAKE_OCaml_CREATE_STATIC_LIBRARY
+    "python <CMAKE_OCaml_COMPILER> lib -o <TARGET> <OBJECTS>")
+ENDIF(NOT CMAKE_OCaml_CREATE_STATIC_LIBRARY)
+
+# compile an OCaml file into an object file
+IF(NOT CMAKE_OCaml_COMPILE_OBJECT)
+  SET(CMAKE_OCaml_COMPILE_OBJECT
+    "python <CMAKE_OCaml_COMPILER> obj <DEFINES> <FLAGS> -o <OBJECT> <SOURCE>")
+ENDIF(NOT CMAKE_OCaml_COMPILE_OBJECT)
+
+# link to an executable
+IF(NOT CMAKE_OCaml_LINK_EXECUTABLE)
+  SET(CMAKE_OCaml_LINK_EXECUTABLE
+    "python <CMAKE_OCaml_COMPILER> exe <FLAGS> <CMAKE_OCaml_LINK_FLAGS> <LINK_FLAGS> <LINK_LIBRARIES> <OBJECTS> -o <TARGET>")
+ENDIF(NOT CMAKE_OCaml_LINK_EXECUTABLE)
+
+MARK_AS_ADVANCED(
+CMAKE_OCaml_FLAGS
+CMAKE_OCaml_FLAGS_DEBUG
+CMAKE_OCaml_FLAGS_MINSIZEREL
+CMAKE_OCaml_FLAGS_RELEASE
+CMAKE_OCaml_FLAGS_RELWITHDEBINFO
+)
+SET(CMAKE_OCaml_INFORMATION_LOADED 1)
+
